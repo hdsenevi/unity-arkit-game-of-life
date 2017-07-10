@@ -20,10 +20,22 @@ public class Grid
                 }
             }
         }
+
+        GridElement ge = GetGridElementAtIndex(5, 0, 5);
+        foreach (Vector3 neighbour in ge.neighbours)
+        {
+            GridElement element = GetGridElementAtIndex((int)neighbour.x, (int)neighbour.y, (int)neighbour.z);
+            element.SetState(GridElement.ElementState.Alive);
+        }
     }
 
     public GridElement GetGridElementAtIndex(int xIndex, int yIndex, int zIndex)
     {
         return _gridElements[xIndex, yIndex, zIndex];
     }
+
+//    public GridElement[] GetNeighboursOf(int xIndex, int yIndex, int zIndex)
+//    {
+//        
+//    }
 }
