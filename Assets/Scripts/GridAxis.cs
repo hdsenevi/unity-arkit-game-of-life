@@ -45,4 +45,19 @@ public class GridAxis {
 
 		return null;
 	}
+
+	public GridElement GetElementAtPosition(int xPos, int yPos, int zPos) {  
+		switch (this.axisType) {
+		case AxisType.XAxis:
+			
+			break;
+		case AxisType.YAxis:
+			break;
+		case AxisType.ZAxis:
+			break;
+		default:
+			break;
+		}
+		return null;
+	}
 }
