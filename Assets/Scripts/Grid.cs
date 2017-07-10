@@ -6,7 +6,7 @@ public class Grid
 {
     private GridElement[ , , ] _gridElements;
 
-    public Grid(int xSize, int ySize, int zSize)
+    public Grid(int xSize, int ySize, int zSize, GameObject gridVisualPrefab, Transform parentTransform)
     {
         _gridElements = new GridElement[xSize, ySize, zSize];
 
@@ -16,12 +16,14 @@ public class Grid
             {
                 for (int z = 0; z < zSize; z++)
                 {
-                    _gridElements[x, y, z] = new GridElement(x, y, z);
+                    _gridElements[x, y, z] = new GridElement(x, y, z, gridVisualPrefab, parentTransform);
                 }
             }
         }
+    }
 
-        GridElement ge = _gridElements[0, 5, 9] as GridElement;
-        Debug.Log(ge.XYZ);
+    public GridElement GetGridElementAtIndex(int xIndex, int yIndex, int zIndex)
+    {
+        return _gridElements[xIndex, yIndex, zIndex];
     }
 }
