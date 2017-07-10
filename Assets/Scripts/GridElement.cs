@@ -6,8 +6,8 @@ public class GridElement
 {
     public enum ElementState
     {
-        Alive,
-        Dead,
+        Live,
+        Dead
     }
 
     public ElementState state { get; private set; }
@@ -44,29 +44,24 @@ public class GridElement
             _gameObject.transform.parent = parentTransform;
         }
 
-        if (x == 5 && z == 5)
-        {
-            Debug.Log(" _pos : " + _pos);
-            // This will cache gridIndexSet values for neightbours so that we don't 
-            // have to do that calculation over and over again.
-            // OPTIMIZATION : can do this lazily
-            CalculateNeighbours(_pos);
-
-            this.SetState(ElementState.Alive);
-        }
-        else
-            this.SetState(ElementState.Dead);
+        // This will cache gridIndexSet values for neightbours so that we don't 
+        // have to do that calculation over and over again.
+        // OPTIMIZATION : can do this lazily
+        CalculateNeighbours(_pos);
+        
+        this.SetState(ElementState.Dead);
     }
 
     public void SetState(ElementState state)
     {
-        switch (state)
+        this.state = state;
+        
+        switch (this.state)
         {
-            case ElementState.Alive:
+            case ElementState.Live:
                 _gameObject.SetActive(true);
                 break;
             case ElementState.Dead:
-            default:
                 _gameObject.SetActive(false);
                 break;
         }
@@ -85,10 +80,14 @@ public class GridElement
             {
                 if (x != i || z != j)
                 {
-                    Debug.Log("x:" + x + " | z:" + z);
                     neighbours.Add(new Vector3(x, 0, z));
                 }
             }
         }
+    }
+
+    public bool IsLive()
+    {
+        return state == ElementState.Live ? true : false;
     }
 }
