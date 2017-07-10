@@ -2,24 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid {
-	
-	private GridAxis _xAxis;
-	private GridAxis _yAxis;
-	private GridAxis _zAxis;
+public class Grid
+{
+    private GridElement[ , , ] _gridElements;
 
-	public Grid(int xSize, int ySize, int zSize) {
-		_xAxis = new GridAxis (GridAxis.AxisType.XAxis, xSize);
-		_yAxis = new GridAxis (GridAxis.AxisType.YAxis, ySize);
-		_zAxis = new GridAxis (GridAxis.AxisType.ZAxis, zSize);
+    public Grid(int xSize, int ySize, int zSize)
+    {
+        _gridElements = new GridElement[xSize, ySize, zSize];
 
-		_xAxis.AddDependentAxis (_yAxis);
-		_yAxis.AddDependentAxis (_zAxis);
+        for (int x = 0; x < xSize; x++)
+        {
+            for (int y = 0; y < ySize; y++)
+            {
+                for (int z = 0; z < zSize; z++)
+                {
+                    _gridElements[x, y, z] = new GridElement(x, y, z);
+                }
+            }
+        }
 
-		_zAxis.AddGridElement (new GridElement ("blah blah"));
-	}
-
-	public GridElement GetElement() {
-		return _xAxis.GetElementAtIndex (0);
-	}
+        GridElement ge = _gridElements[0, 5, 9] as GridElement;
+        Debug.Log(ge.XYZ);
+    }
 }
