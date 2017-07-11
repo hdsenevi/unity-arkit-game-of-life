@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Grid
 {
+    public enum NeighboutAccessType
+    {
+        OnlyLive,
+        OnlyDead,
+        LiveAndDeadBoth
+    }
+    
     private GridElement[ , , ] _gridElements;
     private readonly GridSize _gridSize;
 
@@ -29,7 +36,7 @@ public class Grid
         return _gridElements[xIndex, yIndex, zIndex];
     }
 
-    public GridElement[] GetNeighboursOfElement(GridElement findNeighboursOf)
+    public GridElement[] GetNeighboursOfElement(GridElement findNeighboursOf, NeighboutAccessType neighboutAccess = NeighboutAccessType.LiveAndDeadBoth)
     {
         List<GridElement> neigbours = new List<GridElement>();
         foreach (Vector3 neighbour in findNeighboursOf.neighbours)
