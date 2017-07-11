@@ -10,7 +10,7 @@ public class GridElement
         Dead
     }
 
-    public ElementState state { get; private set; }
+    public ElementState state { get; set; }
 
     public int X { get; private set; }
 
@@ -25,18 +25,18 @@ public class GridElement
         get { return _pos; }
     }
 
-    public List<Vector3> neighbours { get; private set; }
+    public List<GridIndexPath> neighbours { get; private set; }
 
     protected GameObject _gameObject;
 
-    public GridElement(int x, int y, int z, GameObject gridVisualPrefab, Transform parentTransform)
+    public GridElement(int x, int y, int z, GameObject gridVisualPrefab, Transform parentTransform, ref GridSize gridCapacity)
     {
         X = x;
         Y = y;
         Z = z;
 
         _pos = new Vector3(X, Y, Z);
-        neighbours = new List<Vector3>();
+        neighbours = new List<GridIndexPath>();
         _gameObject = GameObject.Instantiate(gridVisualPrefab, _pos, Quaternion.identity);
 
         if (parentTransform != null)
@@ -47,16 +47,19 @@ public class GridElement
         // This will cache gridIndexSet values for neightbours so that we don't 
         // have to do that calculation over and over again.
         // OPTIMIZATION : can do this lazily
-        CalculateNeighbours(_pos);
+        CalculateNeighbours(_pos, ref gridCapacity);
         
-        this.SetState(ElementState.Dead);
+        if (Random.Range(0, 100) % 2 == 0)
+            this.SetState(ElementState.Dead);
+        else 
+            this.SetState(ElementState.Live);
     }
 
-    public void SetState(ElementState state)
+    public void SetState(ElementState incomingState)
     {
-        this.state = state;
+        state = incomingState;
         
-        switch (this.state)
+        switch (state)
         {
             case ElementState.Live:
                 _gameObject.SetActive(true);
@@ -67,20 +70,26 @@ public class GridElement
         }
     }
 
-    private void CalculateNeighbours(Vector3 currentGridIndexSet)
+    private void CalculateNeighbours(Vector3 currentGridIndexSet, ref GridSize gridCapacity)
     {
-        int rowLimit = 10 - 1;
-        int columnLimit = 10 - 1;
+        int xCapaxity = gridCapacity.x - 1;
+        int yCapaxity = gridCapacity.y - 1;
+        int zCapaxity = gridCapacity.z - 1;
+        
         int i = (int) currentGridIndexSet.x;
-        int j = (int) currentGridIndexSet.z;
+        int j = (int) currentGridIndexSet.y;
+        int k = (int) currentGridIndexSet.z;
 
-        for (var x = Mathf.Max(0, i - 1); x <= Mathf.Min(i + 1, rowLimit); x++)
+        for (var x = Mathf.Max(0, i - 1); x <= Mathf.Min(i + 1, xCapaxity); x++)
         {
-            for (var z = Mathf.Max(0, j - 1); z <= Mathf.Min(j + 1, columnLimit); z++)
+            for (var y = Mathf.Max(0, j - 1); y <= Mathf.Min(j + 1, yCapaxity); y++)
             {
-                if (x != i || z != j)
+                for (var z = Mathf.Max(0, k - 1); z <= Mathf.Min(k + 1, zCapaxity); z++)
                 {
-                    neighbours.Add(new Vector3(x, 0, z));
+                    if (x != i || y != j || z != k)
+                    {
+                        neighbours.Add(new GridIndexPath(x, y, z));
+                    }
                 }
             }
         }
@@ -88,6 +97,6 @@ public class GridElement
 
     public bool IsLive()
     {
-        return state == ElementState.Live ? true : false;
+        return this.state == ElementState.Live ? true : false;
     }
 }
