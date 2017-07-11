@@ -25,7 +25,7 @@ public class Grid
             {
                 for (int z = 0; z < _gridSize.z; z++)
                 {
-                    _gridElements[x, y, z] = new GridElement(x, y, z, gridVisualPrefab, parentTransform);
+                    _gridElements[x, y, z] = new GridElement(x, y, z, gridVisualPrefab, parentTransform, ref _gridSize);
                 }
             }
         }
@@ -35,21 +35,43 @@ public class Grid
     {
         return _gridElements[xIndex, yIndex, zIndex];
     }
+    
+    public GridElement GetGridElementAtIndex(GridIndexPath indexPath)
+    {
+        return _gridElements[indexPath.xIndex, indexPath.yIndex, indexPath.zIndex];
+    }
 
     public GridElement[] GetNeighboursOfElement(GridElement findNeighboursOf, NeighboutAccessType neighboutAccess = NeighboutAccessType.LiveAndDeadBoth)
     {
         List<GridElement> neigbours = new List<GridElement>();
-        foreach (Vector3 neighbour in findNeighboursOf.neighbours)
+        foreach (GridIndexPath neighbourIndexPath in findNeighboursOf.neighbours)
         {
-            GridElement element = GetGridElementAtIndex((int)neighbour.x, (int)neighbour.y, (int)neighbour.z);
-//            element.SetState(GridElement.ElementState.Live);
-            neigbours.Add(element);
+            GridElement element = GetGridElementAtIndex(neighbourIndexPath);
+
+            switch (neighboutAccess)
+            {
+                case NeighboutAccessType.OnlyDead:
+                    if (!element.IsLive())
+                    {
+                        neigbours.Add(element);
+                    }
+                    break;
+                case NeighboutAccessType.OnlyLive:
+                    if (element.IsLive())
+                    {
+                        neigbours.Add(element);
+                    }
+                    break;
+                case NeighboutAccessType.LiveAndDeadBoth:
+                    neigbours.Add(element);
+                    break;
+            }
         }
 
         return neigbours.ToArray();
     }
 
-    public GridElement[] GetLiveElements()
+    public GridElement[] GetAllElements()
     {
         List<GridElement> liveElements = new List<GridElement>();
         for (int x = 0; x < _gridSize.x; x++)
@@ -59,10 +81,10 @@ public class Grid
                 for (int z = 0; z < _gridSize.z; z++)
                 {
                     GridElement ge = GetGridElementAtIndex(x, y, z);
-                    if (ge.IsLive())
-                    {
+//                    if (ge.IsLive())
+//                    {
                         liveElements.Add(ge);
-                    }
+//                    }
                 }
             }
         }
